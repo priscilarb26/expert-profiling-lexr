@@ -179,10 +179,8 @@ Foram realizados experimentos utilizando:
 
 Esses experimentos são disponibilizados como uma **extensão prática do trabalho** e não fazem parte da comparação experimental principal utilizada para responder à questão de pesquisa do TCC.
 ```
-
----
-
 ## Estrutura do repositório
+
 ├── README.md
 ├── reprodutibilidade.md
 ├── requirements.txt
