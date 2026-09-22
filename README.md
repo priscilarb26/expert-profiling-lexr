@@ -183,9 +183,6 @@ Esses experimentos são disponibilizados como uma **extensão prática do trabal
 ---
 
 ## Estrutura do repositório
-
-```text
-.
 ├── README.md
 ├── reprodutibilidade.md
 ├── requirements.txt
