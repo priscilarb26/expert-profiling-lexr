@@ -187,7 +187,8 @@ Esses experimentos são disponibilizados como uma **extensão prática do trabal
 │
 ├── data/
 │   ├── processed/
-│   └── curriculos/
+│   ├── curriculos/
+│   └── samples/
 │
 ├── src/
 │   ├── preprocessing/
