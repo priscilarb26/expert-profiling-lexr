@@ -1,0 +1,2 @@
+
+O diretório ground_truth reúne os arquivos de referência utilizados na avaliação dos experimentos de perfilamento de especialistas sobre a base LExR. O arquivo `LExR-prof-qrels_filtrado` contém os julgamentos de relevância associados aos identificadores dos documentos e aos termos relacionados aos perfis, enquanto `author_unique_prof-qrels.json` apresenta a lista de autores únicos considerados na avaliação. Esses arquivos são utilizados como base de comparação e validação dos resultados gerados pelos diferentes métodos avaliados no projeto.
