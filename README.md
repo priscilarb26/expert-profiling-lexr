@@ -90,11 +90,11 @@ Foram utilizadas duas abordagens clássicas de Recuperação de Informação:
 
 Foram avaliadas diferentes variantes da família Qwen:
 
-* Qwen2.5-0.6B
-* Qwen3-0.6B
+* Qwen2.5-1.5B
+* Qwen2.5-3B
 * Qwen3-1.7B
 * Qwen3-4B
-* Qwen3.5-0.8B
+* Qwen3.5-2B
 * Qwen3.5-4B
 
 A comparação inicial entre os modelos foi realizada em configuração **few-shot** sobre o conjunto completo de pesquisadores.
