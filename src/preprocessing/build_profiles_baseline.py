@@ -31,6 +31,14 @@ Instalação:
     python -m spacy download pt_core_news_sm
     python -m spacy download en_core_web_sm
 
+Uso
+---
+    python src/preprocessing/build_profiles_baseline.py \\
+        --documents /caminho/filtered_documents.json \\
+        --qrels /caminho/LExR-prof-qrels_filtrado \\
+        --output-authors /caminho/perfis_autores.json \\
+        --output-documents /caminho/perfis_por_documento.json \\
+                
 ATENÇÃO: as versões das dependências devem ser compatíveis com as registradas
 no arquivo ``reprodutibilidade.md`` do projeto. 
 """
