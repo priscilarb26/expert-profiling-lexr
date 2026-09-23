@@ -251,8 +251,7 @@ O projeto utiliza principalmente:
 * pandas
 * NumPy
 * SciPy
-* Google Colab
-* NVIDIA A100
+* Google Colab (NVIDIA A100)
 
 ---
 
