@@ -1,4 +1,4 @@
-"""Inferência genérica do LExR.
+"""Inferência genérica das variantes Qwen sobre perfis já preparados do LExR.
 
 São reutilizados os módulos ``prompts.py`` e ``parse_tags.py``. 
 O nome do modelo e os hiperparâmetros são informados por argumentos,
@@ -41,8 +41,9 @@ from typing import Any
 try:
     from tqdm.auto import tqdm
 except ImportError:
-    def tqdm(it, **kwargs): 
+    def tqdm(it, **kwargs):  # type: ignore[no-redef]
         return it
+
 try:
     from .prompts import montar_mensagens
     from .parse_tags import construir_ranking_qwen, parsear_tags_da_resposta
@@ -53,9 +54,9 @@ except ImportError:
 
 @dataclass(frozen=True)
 class GenerationConfig:
-    # O nome do modelo e os valores das variáveis variam de acordo com a família utilizada.
+    #  O nome do modelo e os valores das variáveis variam de acordo com a família utilizada.
+    model_name: str = "Qwen/Qwen2.5-1.5B-Instruct"
     mode: str = "few-shot"
-    model_name: str = "Qwen/Qwen2.5-1.5B-Instruct"  
     n_tags: int = 30
     max_publicacoes: int = 50
     batch_size: int = 4
@@ -63,6 +64,8 @@ class GenerationConfig:
     temperature: float = 0.7
     top_p: float = 0.8
     top_k: int = 20
+    min_p: float | None = None
+    enable_thinking: bool | None = None
     repetition_penalty: float = 1.1
     max_new_tokens: int = 1024
     max_input_tokens: int = 16384
@@ -80,6 +83,8 @@ class GenerationConfig:
             raise ValueError("temperature deve ser > 0 com do_sample=True")
         if self.do_sample and not 0 < self.top_p <= 1:
             raise ValueError("top_p deve pertencer a (0, 1] com do_sample=True")
+        if self.min_p is not None and not 0 <= self.min_p <= 1:
+            raise ValueError("min_p deve pertencer a [0, 1]")
         if self.repetition_penalty <= 0:
             raise ValueError("repetition_penalty deve ser > 0")
 
@@ -94,6 +99,8 @@ class GenerationConfig:
             "temperature": self.temperature if self.do_sample else None,
             "top_p": self.top_p if self.do_sample else None,
             "top_k": self.top_k if self.do_sample else None,
+            "min_p": self.min_p if self.do_sample else None,
+            "enable_thinking": self.enable_thinking,
             "repetition_penalty": self.repetition_penalty,
             "max_new_tokens": self.max_new_tokens,
             "max_input_tokens": self.max_input_tokens,
@@ -153,9 +160,13 @@ def extrair_tags_do_llm_batch(
             pubs, n_tags=config.n_tags,
             max_publicacoes=config.max_publicacoes, modo=config.mode,
         )
-        prompts.append(tokenizer.apply_chat_template(
-            mensagens, tokenize=False, add_generation_prompt=True,
-        ))
+        template_kwargs = {
+            "tokenize": False,
+            "add_generation_prompt": True,
+        }
+        if config.enable_thinking is not None:
+            template_kwargs["enable_thinking"] = config.enable_thinking
+        prompts.append(tokenizer.apply_chat_template(mensagens, **template_kwargs))
     # Reproduz padding esquerdo e truncamento originais do notebook.
     inputs = tokenizer(
         prompts,
@@ -175,6 +186,8 @@ def extrair_tags_do_llm_batch(
         kwargs.update(
             temperature=config.temperature, top_p=config.top_p, top_k=config.top_k,
         )
+        if config.min_p is not None:
+            kwargs["min_p"] = config.min_p
     # Qaundo do_sample = True valores são aplicados em temperature/top_p/top_k;
     # quando do_sample=False essas variáveis não são consideradas
     with torch.no_grad():
@@ -284,7 +297,7 @@ def executar_inferencia(
         pubs = [perfis[a] for a in lote]
         try:
             listas_tags = extrair_tags_do_llm_batch(tokenizer, modelo, device, pubs, config)
-        except Exception as e:           
+        except Exception as e:  
             for autor in lote:
                 erros.append((autor, str(e)))
                 tags_brutas[autor] = []
@@ -348,6 +361,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--top-p", type=float, default=0.8)
     parser.add_argument("--top-k", type=int, default=20)
+    parser.add_argument("--min-p", type=float, default=None)
+    thinking = parser.add_mutually_exclusive_group()
+    thinking.add_argument("--enable-thinking", dest="enable_thinking", action="store_true")
+    thinking.add_argument("--disable-thinking", dest="enable_thinking", action="store_false")
+    parser.set_defaults(enable_thinking=None)
     parser.add_argument("--repetition-penalty", type=float, default=1.1)
     parser.add_argument("--max-new-tokens", type=int, default=1024)
     parser.add_argument("--max-input-tokens", type=int, default=16384)
