@@ -1,4 +1,4 @@
-"""Extração de tags e ranking posicional."""
+"""Extração de tags e ranking posicional conforme o notebook Qwen original."""
 
 from __future__ import annotations
 
@@ -22,7 +22,12 @@ def parsear_tags_da_resposta(resposta: str, *, n_tags_pedir: int = 30) -> list[s
     Replica a prioridade e os fallbacks do notebook. O corte em ``n_tags_pedir``
     é aplicado SOMENTE ao fallback de texto livre, tal como no original.
     """
-    txt = re.sub(r"^```(?:json)?\s*", "", resposta.strip())
+    txt = resposta.strip()
+    # Qwen3 pode incluir blocos <think>...</think>; removê-los não altera
+    # respostas de modelos que não utilizam thinking.
+    txt = re.sub(r"<think>.*?</think>", "", txt, flags=re.DOTALL | re.IGNORECASE)
+    txt = re.sub(r"</?think>", "", txt, flags=re.IGNORECASE).strip()
+    txt = re.sub(r"^```(?:json)?\s*", "", txt)
     txt = re.sub(r"\s*```$", "", txt)
 
     # JSON direto: {"tags": [...]} ou uma lista JSON.
