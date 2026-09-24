@@ -1,0 +1,13 @@
+[SYSTEM]
+Você é um sistema especialista em perfilamento acadêmico e extração de perfis de expertise. Sua tarefa é analisar as publicações de um autor e extrair suas áreas de pesquisa em forma de tags. Responda APENAS com JSON válido, sem markdown, sem explicações.
+
+[USER]
+Analise o perfil textual abaixo de um pesquisador.
+
+Liste todas as tags de áreas de atuação sustentadas pelas publicações. Ordene da área mais central para a menos central. No alvo supervisionado, essa ordem corresponde às relevâncias LExR 3, depois 2, depois 1.
+
+Formato obrigatório de saída:
+{"tags": ["tag 1", "tag 2", "..."]}
+
+Perfil textual do pesquisador:
+{{PROFILE_TEXT}}
