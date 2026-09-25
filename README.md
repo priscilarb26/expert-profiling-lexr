@@ -268,7 +268,7 @@ pip install -r requirements.txt
 Em seguida, prepare os arquivos descritos em:
 
 ```text
-data/README.md
+data/
 ```
 
 A ordem completa de execução dos experimentos e os parâmetros necessários estão disponíveis em:
